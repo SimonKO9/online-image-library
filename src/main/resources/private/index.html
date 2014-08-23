@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Image upload</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.2.0/css/bootstrap.min.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <form method="post" action="api/images" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Upload file</label>
+                    <input class="form-control" type="file" name="uploadedFile"/>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">send!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="webjars/jquery/2.1.1/jquery.min.js"></script>
+<script src="webjars/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</body>
+</html>
