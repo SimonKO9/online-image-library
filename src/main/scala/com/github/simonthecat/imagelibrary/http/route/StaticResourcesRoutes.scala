@@ -1,4 +1,4 @@
-package com.github.simonthecat.imagelibrary.route
+package com.github.simonthecat.imagelibrary.http.route
 
 import spray.routing._
 import spray.routing.directives.CachingDirectives._
