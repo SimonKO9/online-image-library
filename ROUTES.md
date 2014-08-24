@@ -19,7 +19,7 @@ Serves webjars' resources.
 API routes
 ==========
 
-GET /api/image/{key}
+GET /api/images/{key}
 --------------------
 Get image resource by key.
 
@@ -31,7 +31,7 @@ Error http entity:
 404 Not Found if key not found
 
 
-POST /api/image
+POST /api/images
 ---------------
 Upload image resource by key.
 Accepted content types: multipart/form-data. Request must contain image part with Content-Disposition header describing file.
