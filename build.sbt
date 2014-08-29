@@ -6,7 +6,9 @@ version := "0.1"
 
 scalaVersion := "2.11.2"
 
-scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
+scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-target:jvm-1.7")
+
+resolvers += "spray repo" at "http://repo.spray.io"
 
 libraryDependencies ++= {
   val akkaV = "2.3.5"
