@@ -10,6 +10,8 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-target
 
 resolvers += "spray repo" at "http://repo.spray.io"
 
+resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+
 libraryDependencies ++= {
   val akkaV = "2.3.5"
   val sprayV = "1.3.1"
@@ -23,7 +25,9 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-testkit" % akkaV % "test",
     "org.specs2" %% "specs2" % "2.4.1" % "test",
     "org.webjars" % "bootstrap" % "3.2.0",
-    "org.webjars" % "jquery" % "2.1.1"
+    "org.webjars" % "jquery" % "2.1.1",
+    "org.reactivemongo" %% "reactivemongo" % "0.11.0-SNAPSHOT",
+    "com.google.guava" % "guava" % "18.0"
   )
 }
 

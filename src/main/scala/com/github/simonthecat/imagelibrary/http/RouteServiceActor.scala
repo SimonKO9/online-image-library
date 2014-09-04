@@ -1,11 +1,11 @@
 package com.github.simonthecat.imagelibrary.http
 
 import akka.actor.{Actor, ActorLogging, ActorRefFactory, Props}
-import com.github.simonthecat.imagelibrary.core.{AppModule, ImageStorage}
+import com.github.simonthecat.imagelibrary.core.storage.ImageStorage
 import com.github.simonthecat.imagelibrary.http.route.{ImageService, StaticResourcesRoutes}
 import spray.routing._
 
-class RouteServiceActor(imageStorage: ImageStorage) extends Actor with ActorLogging with HttpService with AppModule
+class RouteServiceActor(val imageStorage: ImageStorage) extends Actor with ActorLogging with HttpService
 with StaticResourcesRoutes with ImageService {
 
   implicit val system = context.system

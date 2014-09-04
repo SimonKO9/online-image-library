@@ -1,4 +1,4 @@
-package com.github.simonthecat.imagelibrary.core
+package com.github.simonthecat.imagelibrary.core.storage
 
 import java.io.InputStream
 

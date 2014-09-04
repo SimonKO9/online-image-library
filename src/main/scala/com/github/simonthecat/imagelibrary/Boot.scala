@@ -2,12 +2,11 @@ package com.github.simonthecat.imagelibrary
 
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
-import com.github.simonthecat.imagelibrary.core.AppModule
+import com.github.simonthecat.imagelibrary.core.{MongoModule, AppModule}
 import com.github.simonthecat.imagelibrary.http.RouteServiceActor
 import spray.can.Http
 
-object Boot extends App with AppModule {
-  implicit val system = ActorSystem("image-library")
+object Boot extends App with AppModule with MongoModule {
 
   implicit val routeService = system.actorOf(RouteServiceActor.props, "routeServiceActor")
 
