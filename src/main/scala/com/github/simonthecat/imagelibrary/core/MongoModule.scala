@@ -1,5 +1,6 @@
 package com.github.simonthecat.imagelibrary.core
 
+import com.github.simonthecat.imagelibrary.core.security.{MongoUserStorage, UserStorage}
 import com.github.simonthecat.imagelibrary.core.storage.{ImageStorage, MongoImageStorage}
 import reactivemongo.api.MongoDriver
 
@@ -13,4 +14,7 @@ trait MongoModule {
   implicit lazy val db = connection.db("imagelibrary")
 
   implicit lazy val imageStorage: ImageStorage = new MongoImageStorage()
+
+  implicit lazy val userStorage: UserStorage = new MongoUserStorage()
+
 }
