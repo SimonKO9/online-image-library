@@ -2,11 +2,13 @@ package com.github.simonthecat.imagelibrary.http
 
 import akka.actor.{Actor, ActorLogging, ActorRefFactory, Props}
 import com.github.simonthecat.imagelibrary.core.storage.ImageStorage
-import com.github.simonthecat.imagelibrary.http.route.{ImageService, StaticResourcesRoutes}
+import com.github.simonthecat.imagelibrary.http.auth.User
+import com.github.simonthecat.imagelibrary.http.route.{BasicAuthDirectives, ImageService, StaticResourcesRoutes}
 import spray.routing._
+import spray.routing.authentication.UserPassAuthenticator
 
-class RouteServiceActor(val imageStorage: ImageStorage) extends Actor with ActorLogging with HttpService
-with StaticResourcesRoutes with ImageService {
+class RouteServiceActor(val imageStorage: ImageStorage, val authenticator: UserPassAuthenticator[User]) extends Actor
+with ActorLogging with HttpService with StaticResourcesRoutes with ImageService with BasicAuthDirectives {
 
   implicit val system = context.system
 
@@ -16,7 +18,12 @@ with StaticResourcesRoutes with ImageService {
 
   val myRoute = {
     val websiteRoutes = rootIndexHtml ~ staticFiles
-    val apiRoutes = uploadImage ~ getImage
+
+    val apiRoutes = pathPrefix("api") {
+      auth { implicit user =>
+        uploadImageRoute ~ getImageRoute
+      }
+    }
 
     websiteRoutes ~ apiRoutes
   }
@@ -24,5 +31,6 @@ with StaticResourcesRoutes with ImageService {
 }
 
 object RouteServiceActor {
-  def props(implicit imageStorage: ImageStorage): Props = Props(classOf[RouteServiceActor], imageStorage)
+  def props(implicit imageStorage: ImageStorage, authenticator: UserPassAuthenticator[User]): Props =
+    Props(classOf[RouteServiceActor], imageStorage, authenticator)
 }

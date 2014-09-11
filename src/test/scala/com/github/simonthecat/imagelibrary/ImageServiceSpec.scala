@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream
 
 import akka.actor.ActorRefFactory
 import com.github.simonthecat.imagelibrary.core.storage.{ImageStorage, ImageStoreSuccess, StoredImage}
+import com.github.simonthecat.imagelibrary.http.auth.User
 import com.github.simonthecat.imagelibrary.http.route.ImageService
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -18,6 +19,8 @@ class ImageServiceSpec extends Specification with Specs2RouteTest {
 
   implicit val ec: ExecutionContext = system.dispatcher
 
+  implicit val user = User("testUser")
+
   case class TestImageService(imageStorage: ImageStorage, actorRefFactory: ActorRefFactory = system) extends ImageService
 
   "ImageService" should {
@@ -28,7 +31,7 @@ class ImageServiceSpec extends Specification with Specs2RouteTest {
       when(imageStorage.get("my-image.jpg")).thenReturn(Future.successful(Some(img)))
       val service = new TestImageService(imageStorage)
 
-      Get("/api/images/my-image.jpg") ~> service.getImage ~> check {
+      Get("/images/my-image.jpg") ~> service.getImageRoute ~> check {
         status === StatusCodes.OK
         contentType === ContentType(MediaTypes.`image/jpeg`)
       }
@@ -39,7 +42,7 @@ class ImageServiceSpec extends Specification with Specs2RouteTest {
       when(imageStorage.get(Matchers.anyString())).thenReturn(Future.successful(None))
       val service = new TestImageService(imageStorage)
 
-      Get("/api/images/non-existent-image.jpg") ~> service.getImage ~> check {
+      Get("/images/non-existent-image.jpg") ~> service.getImageRoute ~> check {
         status === StatusCodes.NotFound
         contentType === ContentType(MediaTypes.`application/json`, HttpCharsets.`UTF-8`)
         responseAs[String].parseJson === JsObject(("reason", JsString("Resource not found")))
@@ -51,8 +54,8 @@ class ImageServiceSpec extends Specification with Specs2RouteTest {
       when(imageStorage.get(Matchers.anyString())).thenReturn(Future.successful(None))
       val service = new TestImageService(imageStorage)
 
-      val request = Post("/api/images").withHeaders(HttpHeaders.`Content-Type`(ContentTypes.`application/json`))
-      request ~> service.uploadImage ~> check {
+      val request = Post("/images").withHeaders(HttpHeaders.`Content-Type`(ContentTypes.`application/json`))
+      request ~> service.uploadImageRoute ~> check {
         status === StatusCodes.BadRequest
         responseAs[String].parseJson === JsObject(("reason", JsString("Invalid request: expected multipart/form-data")))
       }
@@ -63,8 +66,8 @@ class ImageServiceSpec extends Specification with Specs2RouteTest {
       when(imageStorage.get(Matchers.anyString())).thenReturn(Future.successful(None))
       val service = new TestImageService(imageStorage)
 
-      val request = Post("/api/images").withHeaders(HttpHeaders.`Content-Type`(ContentType(MediaTypes.`multipart/form-data`)))
-      request ~> service.uploadImage ~> check {
+      val request = Post("/images").withHeaders(HttpHeaders.`Content-Type`(ContentType(MediaTypes.`multipart/form-data`)))
+      request ~> service.uploadImageRoute ~> check {
         status === StatusCodes.BadRequest
         responseAs[String].parseJson === JsObject(("reason", JsString("Missing data part")))
       }
@@ -79,9 +82,9 @@ class ImageServiceSpec extends Specification with Specs2RouteTest {
       val entity = HttpEntity(ContentType(MediaTypes.`image/jpeg`), "dummy".getBytes("UTF-8"))
       val formData = MultipartFormData(List(BodyPart(entity, "uploadedFile")))
 
-      val request = Post("/api/images", formData).withHeaders(HttpHeaders.`Content-Type`(ContentType(MediaTypes.`multipart/form-data`)))
+      val request = Post("/images", formData).withHeaders(HttpHeaders.`Content-Type`(ContentType(MediaTypes.`multipart/form-data`)))
 
-      request ~> service.uploadImage ~> check {
+      request ~> service.uploadImageRoute ~> check {
         responseAs[String].parseJson === JsString("OK")
         status === StatusCodes.OK
       }
