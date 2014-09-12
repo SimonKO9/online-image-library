@@ -1,9 +1,10 @@
-package com.github.simonthecat.imagelibrary.http.route
+package com.github.simonthecat.imagelibrary.http.route.api
 
 import java.io.{ByteArrayInputStream, InputStream}
 
 import com.github.simonthecat.imagelibrary.core.storage._
 import com.github.simonthecat.imagelibrary.http.auth.User
+import com.github.simonthecat.imagelibrary.http.route.ExtraDirectives
 import com.google.common.io.ByteStreams
 import spray.http._
 import spray.json.JsString
@@ -14,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-trait ImageService extends HttpService with ExtraDirectives {
+protected trait ImageRoutesService extends HttpService with ExtraDirectives {
 
   def imageStorage: ImageStorage
 
@@ -35,7 +36,7 @@ trait ImageService extends HttpService with ExtraDirectives {
       }
     }
 
-  def getImageRoute(implicit user: User): Route =
+  def getImageRoute: Route =
     path("images" / Segment) { imageId =>
         onComplete(resolveImage(imageId)) {
           case Success(Some((fileName, bytes))) =>

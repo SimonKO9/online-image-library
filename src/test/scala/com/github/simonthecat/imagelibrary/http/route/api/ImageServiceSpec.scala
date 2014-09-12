@@ -1,11 +1,10 @@
-package com.github.simonthecat.imagelibrary
+package com.github.simonthecat.imagelibrary.http.route.api
 
 import java.io.ByteArrayInputStream
 
 import akka.actor.ActorRefFactory
 import com.github.simonthecat.imagelibrary.core.storage.{ImageStorage, ImageStoreSuccess, StoredImage}
 import com.github.simonthecat.imagelibrary.http.auth.User
-import com.github.simonthecat.imagelibrary.http.route.ImageService
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.specs2.mutable.Specification
@@ -21,7 +20,7 @@ class ImageServiceSpec extends Specification with Specs2RouteTest {
 
   implicit val user = User("testUser")
 
-  case class TestImageService(imageStorage: ImageStorage, actorRefFactory: ActorRefFactory = system) extends ImageService
+  case class TestImageService(imageStorage: ImageStorage, actorRefFactory: ActorRefFactory = system) extends ImageRoutesService
 
   "ImageService" should {
     "return '200 OK' with image payload for existing image ID" in {

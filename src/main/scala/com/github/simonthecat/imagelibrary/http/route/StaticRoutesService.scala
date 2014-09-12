@@ -3,20 +3,15 @@ package com.github.simonthecat.imagelibrary.http.route
 import spray.routing._
 import spray.routing.directives.CachingDirectives._
 
-trait StaticResourcesRoutes extends HttpService {
-  val rootIndexHtml = {
-    val serveGet = get {
+trait StaticRoutesService extends HttpService {
+
+  private val rootIndexHtml =
+    (path("index.html") | path("")) {
       getFromResource("private/index.html")
     }
 
-    path("index.html") {
-      serveGet
-    } ~ path("") {
-      serveGet
-    }
-  }
 
-  val staticFiles: Route = pathPrefix("public") {
+  private val staticFiles: Route = pathPrefix("public") {
     get {
       cache(routeCache()) {
         getFromResourceDirectory("public")
@@ -29,5 +24,7 @@ trait StaticResourcesRoutes extends HttpService {
       }
     }
   }
+
+  val staticRoutes = rootIndexHtml ~ staticFiles
 
 }
