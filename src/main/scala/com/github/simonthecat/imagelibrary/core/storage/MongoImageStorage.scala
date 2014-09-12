@@ -9,6 +9,7 @@ import reactivemongo.api.collections.default.BSONCollection
 import reactivemongo.bson._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 class MongoImageStorage(implicit val db: DB, implicit val ec: ExecutionContext) extends ImageStorage {
 
@@ -27,14 +28,20 @@ class MongoImageStorage(implicit val db: DB, implicit val ec: ExecutionContext) 
   }
 
   override def get(imageId: String): Future[Option[StoredImage]] = {
-    val query = BSONDocument("_id" -> BSONObjectID(imageId))
-    collection.find(query).cursor[ImageDocument].collect[List]().map(_.headOption).map {
-      case Some(document) =>
-        val byteInputStream = new ByteArrayInputStream(document.dataArray)
-        val img = StoredImage(byteInputStream, document.fileName)
-        Some(img)
-      case None =>
-        None
+    BSONObjectID.parse(imageId) match {
+      case Success(bsonObjectId) =>
+        val query = BSONDocument("_id" -> BSONObjectID(imageId))
+        collection.find(query).cursor[ImageDocument].collect[List]().map(_.headOption).map {
+          case Some(document) =>
+            val byteInputStream = new ByteArrayInputStream(document.dataArray)
+            val img = StoredImage(byteInputStream, document.fileName)
+            Some(img)
+          case None =>
+            None
+        }
+      case Failure(_) =>
+        Future.successful(None)
     }
+
   }
 }
