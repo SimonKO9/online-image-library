@@ -4,6 +4,7 @@ import com.github.simonthecat.imagelibrary.core.security.UserStorage
 import com.github.simonthecat.imagelibrary.http.auth.User
 import com.github.simonthecat.imagelibrary.http.route.ExtraDirectives
 import com.github.simonthecat.imagelibrary.http.dto.UserDto
+import org.apache.logging.log4j.LogManager
 import spray.http.StatusCodes
 import spray.routing.{Route, HttpService}
 import scala.concurrent.ExecutionContext.Implicits.global
