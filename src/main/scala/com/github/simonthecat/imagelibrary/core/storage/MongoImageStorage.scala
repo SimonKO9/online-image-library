@@ -2,6 +2,7 @@ package com.github.simonthecat.imagelibrary.core.storage
 
 import java.io.{ByteArrayInputStream, InputStream}
 
+import com.github.simonthecat.imagelibrary.core.security.StoredUser
 import com.github.simonthecat.imagelibrary.core.storage.ImageDocument._
 import com.google.common.io.ByteStreams
 import reactivemongo.api._
@@ -16,9 +17,9 @@ class MongoImageStorage(implicit val db: DB, implicit val ec: ExecutionContext) 
   val collection: BSONCollection = db.collection("images")
 
 
-  override def save(fileName: String, bytes: InputStream): Future[ImageStoreResult] = {
+  override def save(fileName: String, bytes: InputStream, userOpt: Option[StoredUser]): Future[ImageStoreResult] = {
     val byteArray = ByteStreams.toByteArray(bytes)
-    val document = ImageDocument(fileName, byteArray)
+    val document = ImageDocument(fileName, byteArray, userOpt)
 
     collection.insert(document).map {
       error =>

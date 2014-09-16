@@ -50,7 +50,7 @@ protected trait ImageRoutesService extends HttpService with ExtraDirectives {
     }
   
   private def handleImageUpload(fileName: String, bytes: InputStream) =
-    onComplete(imageStorage.save(fileName, bytes)) {
+    onComplete(imageStorage.save(fileName, bytes, None)) { // TODO
       case Success(ImageStoreSuccess(imageId)) =>
         respondWithHeader(HttpHeaders.Location(s"/api/images/$imageId")) {
           complete(JsString("OK").toString())

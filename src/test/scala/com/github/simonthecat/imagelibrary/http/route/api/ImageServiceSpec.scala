@@ -75,7 +75,7 @@ class ImageServiceSpec extends Specification with Specs2RouteTest {
     "return '200 OK' with json payload for POST request with image payload" in {
       val imageStorage = mock(classOf[ImageStorage])
       val img = StoredImage(new ByteArrayInputStream("dummy".getBytes("UTF-8")), "my-image.jpg")
-      when(imageStorage.save(Matchers.anyString(), Matchers.anyObject())).thenReturn(Future.successful(ImageStoreSuccess("my-image.jpg")))
+      when(imageStorage.save(Matchers.anyString(), Matchers.anyObject(), Matchers.anyObject())).thenReturn(Future.successful(ImageStoreSuccess("my-image.jpg")))
 
       val service = new TestImageService(imageStorage)
       val entity = HttpEntity(ContentType(MediaTypes.`image/jpeg`), "dummy".getBytes("UTF-8"))
