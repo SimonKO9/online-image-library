@@ -8,7 +8,7 @@ trait ApiRoutesService extends BasicAuthDirectives with ImageRoutesService with 
     uploadImageRoute ~ getUser
   }
 
-  private val publicRoutes = getImageRoute
+  private val publicRoutes = getImageRoute ~ createUser
 
   val apiRoutes = pathPrefix("api") {
     publicRoutes ~ securedRoutes

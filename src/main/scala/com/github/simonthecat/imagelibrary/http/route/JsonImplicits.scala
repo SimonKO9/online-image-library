@@ -1,10 +1,12 @@
 package com.github.simonthecat.imagelibrary.http.route
 
-import com.github.simonthecat.imagelibrary.http.dto.UserDto
+import com.github.simonthecat.imagelibrary.http.dto.{UserRegistrationDataDto, UserDto}
 import spray.json.DefaultJsonProtocol._
 
 object JsonImplicits {
 
   implicit val userFormat = jsonFormat1(UserDto.apply)
+
+  implicit val userRegistrationDataFormat = jsonFormat3(UserRegistrationDataDto.apply)
 
 }

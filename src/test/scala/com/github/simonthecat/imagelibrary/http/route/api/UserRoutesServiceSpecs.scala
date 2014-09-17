@@ -1,9 +1,10 @@
 package com.github.simonthecat.imagelibrary.http.route.api
 
 import akka.actor.ActorRefFactory
-import com.github.simonthecat.imagelibrary.core.security.{StoredUser, UserStorage}
+import com.github.simonthecat.imagelibrary.core.security.{Security, StoredUser, UserStorage}
 import com.github.simonthecat.imagelibrary.http.auth.User
-import com.github.simonthecat.imagelibrary.http.dto.UserDto
+import com.github.simonthecat.imagelibrary.http.dto.{UserRegistrationDataDto, UserDto}
+import org.mockito.Matchers
 import org.specs2.mutable._
 import spray.http.StatusCodes
 import spray.json.{JsString, JsObject}
@@ -17,8 +18,14 @@ import spray.json._
 import scala.concurrent.Future
 
 class UserRoutesServiceSpecs extends Specification with Specs2RouteTest {
-  
-  case class TestUserRoutesService(userStorage: UserStorage, actorRefFactory: ActorRefFactory = system) extends UserRoutesService
+
+  val mockSecurity: Security = {
+    val securityMock: Security = mock(classOf[Security])
+    when(securityMock.hash(Matchers.any(), Matchers.any())).thenReturn("hash")
+    securityMock
+  }
+
+  case class TestUserRoutesService(userStorage: UserStorage, actorRefFactory: ActorRefFactory = system, security: Security = mockSecurity) extends UserRoutesService
   
   "User routes" should {
     "return 200 OK and user entity if logged in user is equal to requested" in {
@@ -46,8 +53,21 @@ class UserRoutesServiceSpecs extends Specification with Specs2RouteTest {
         responseAs[String].parseJson === JsObject(("reason", JsString("You can access only your own user via REST api")))
       }
     }
+
+    "return 201 Created and user entity if user successfully registered" in {
+      val registerUser = UserRegistrationDataDto("testuser", "test@email.com", "abc")
+      val registeredUser = StoredUser(registerUser.username, "pass", "salt")
+
+      val userStorage = mock(classOf[UserStorage])
+      when(userStorage.createUser(Matchers.any())).thenReturn(Future.successful(Some(registeredUser)))
+      when(userStorage.getUser(registerUser.username)).thenReturn(Future.successful(None))
+      val service = TestUserRoutesService(userStorage)
+
+      Post("/user", registerUser) ~> service.createUser ~> check {
+        status === StatusCodes.Created
+        responseAs[UserDto] === UserDto(registerUser.username)
+      }
+    }
   }
 
-
-  
 }
